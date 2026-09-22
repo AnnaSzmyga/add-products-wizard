@@ -21,15 +21,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { toast } from "sonner";
+
 import { ProductForm } from "@/components/products/ProductForm";
 import { mockProducts } from "@/data/mock-products";
 import type { Product, ProductFormValues } from "@/types/product";
+import { Check } from "lucide-react";
 
 const PRODUCTS_PER_PAGE = 5;
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>(mockProducts);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formKey, setFormKey] = useState(0);
 
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
 
@@ -69,7 +73,23 @@ export default function Home() {
 
     setProducts((currentProducts) => [...currentProducts, newProduct]);
 
+    toast.success("Produkt został dodany", {
+      icon: (
+        <span className="flex size-5 items-center justify-center rounded-full bg-green-500">
+          <Check className="size-3 text-white" strokeWidth={3} />
+        </span>
+      ),
+    });
+
     setIsDialogOpen(false);
+  };
+
+  const handleDialogChange = (open: boolean) => {
+    if (!open) {
+      setFormKey((key) => key + 1);
+    }
+
+    setIsDialogOpen(open);
   };
 
   return (
@@ -84,17 +104,17 @@ export default function Home() {
             </p>
           </div>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
             <DialogTrigger className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
               Dodaj produkt
             </DialogTrigger>
 
-            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+            <DialogContent className="h-full w-full max-w-none rounded-none p-4 sm:h-auto sm:max-h-[90vh] sm:max-w-2xl sm:rounded-lg sm:p-6">
               <DialogHeader>
                 <DialogTitle>Dodaj produkt</DialogTitle>
               </DialogHeader>
 
-              <ProductForm onSubmit={handleAddProduct} />
+              <ProductForm key={formKey} onSubmit={handleAddProduct} />
             </DialogContent>
           </Dialog>
         </div>
