@@ -1,69 +1,198 @@
-import Image from "next/image";
+"use client";
+
+import { useMemo, useState } from "react";
+import { parseAsInteger, useQueryState } from "nuqs";
+
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+import { ProductForm } from "@/components/products/ProductForm";
+import { mockProducts } from "@/data/mock-products";
+import type { Product, ProductFormValues } from "@/types/product";
+
+const PRODUCTS_PER_PAGE = 5;
 
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+
+  const totalProducts = products.length;
+
+  const totalPages = Math.max(1, Math.ceil(totalProducts / PRODUCTS_PER_PAGE));
+
+  const currentPage = Math.min(Math.max(page, 1), totalPages);
+
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+
+    return products.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
+  }, [products, currentPage]);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      handlePageChange(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      handlePageChange(currentPage + 1);
+    }
+  };
+
+  const handleAddProduct = (product: ProductFormValues) => {
+    const newProduct: Product = {
+      id: crypto.randomUUID(),
+      ...product,
+    };
+
+    setProducts((currentProducts) => [...currentProducts, newProduct]);
+
+    setIsDialogOpen(false);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen p-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Produkty</h1>
+
+            <p className="mt-1 text-sm text-muted-foreground">
+              {totalProducts} produktów w katalogu
+            </p>
+          </div>
+
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+              Dodaj produkt
+            </DialogTrigger>
+
+            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Dodaj produkt</DialogTitle>
+              </DialogHeader>
+
+              <ProductForm onSubmit={handleAddProduct} />
+            </DialogContent>
+          </Dialog>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="rounded-lg border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nazwa</TableHead>
+                <TableHead>Kategoria</TableHead>
+                <TableHead>Cena brutto</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Magazyn</TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {paginatedProducts.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell className="font-medium">{product.name}</TableCell>
+
+                  <TableCell>{product.category}</TableCell>
+
+                  <TableCell>
+                    {product.grossPrice.toFixed(2)} {product.currency}
+                  </TableCell>
+
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className={
+                        product.isAvailable
+                          ? "border-green-200 bg-green-50 text-green-700"
+                          : "border-red-200 bg-red-50 text-red-700"
+                      }
+                    >
+                      {product.isAvailable ? "Dostępny" : "Niedostępny"}
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell>{product.stockQuantity ?? "-"}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={5}>
+                  <div className="flex items-center justify-between gap-4">
+                    <p className="whitespace-nowrap text-sm text-muted-foreground">
+                      Strona {currentPage} z {totalPages} · {totalProducts}{" "}
+                      produktów
+                    </p>
+
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={handlePreviousPage}
+                        disabled={currentPage === 1}
+                        className="rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+                      >
+                        Wstecz
+                      </button>
+
+                      {Array.from(
+                        { length: totalPages },
+                        (_, index) => index + 1
+                      ).map((pageNumber) => (
+                        <button
+                          key={pageNumber}
+                          type="button"
+                          onClick={() => handlePageChange(pageNumber)}
+                          className={`h-9 min-w-9 rounded-md border px-3 text-sm font-medium transition-colors ${
+                            pageNumber === currentPage
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-muted"
+                          }`}
+                        >
+                          {pageNumber}
+                        </button>
+                      ))}
+
+                      <button
+                        type="button"
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                        className="rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+                      >
+                        Dalej
+                      </button>
+                    </div>
+                  </div>
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
