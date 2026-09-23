@@ -2,8 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { parseAsInteger, useQueryState } from "nuqs";
+import { Check, ChevronLeft, ChevronRight, PlusIcon } from "lucide-react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -21,12 +24,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { toast } from "sonner";
-
 import { ProductForm } from "@/components/products/ProductForm";
 import { mockProducts } from "@/data/mock-products";
 import type { Product, ProductFormValues } from "@/types/product";
-import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const PRODUCTS_PER_PAGE = 5;
 
@@ -93,11 +94,11 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen p-8">
-      <div className="mx-auto max-w-7xl">
+    <main className="min-h-screen bg-background p-8">
+      <div className="mx-auto w-full max-w-[1240px]">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Produkty</h1>
+            <h1 className="text-2xl font-bold text-foreground">Produkty</h1>
 
             <p className="mt-1 text-sm text-muted-foreground">
               {totalProducts} produktów w katalogu
@@ -105,13 +106,20 @@ export default function Home() {
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
-            <DialogTrigger className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
-              Dodaj produkt
-            </DialogTrigger>
+            <DialogTrigger
+              render={
+                <Button>
+                  <PlusIcon />
+                  Dodaj produkt
+                </Button>
+              }
+            />
 
-            <DialogContent className="h-full w-full max-w-none rounded-none p-4 sm:h-auto sm:max-h-[90vh] sm:max-w-2xl sm:rounded-lg sm:p-6">
-              <DialogHeader>
-                <DialogTitle>Dodaj produkt</DialogTitle>
+            <DialogContent className="h-full p-0 w-full max-w-none rounded-none sm:h-auto sm:max-h-[90vh] sm:max-w-[720px] sm:rounded-xl sm:border sm:border-border">
+              <DialogHeader className="h-[72px] justify-center border-b border-border px-4">
+                <DialogTitle className="text-base font-medium leading-5 text-foreground">
+                  Dodaj nowy produkt
+                </DialogTitle>
               </DialogHeader>
 
               <ProductForm key={formKey} onSubmit={handleAddProduct} />
@@ -119,50 +127,81 @@ export default function Home() {
           </Dialog>
         </div>
 
-        <div className="rounded-lg border">
+        <div className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Nazwa</TableHead>
-                <TableHead>Kategoria</TableHead>
-                <TableHead>Cena brutto</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Magazyn</TableHead>
+              <TableRow className="h-[54px] border-border bg-[#F9FAFB] hover:bg-[#F9FAFB] font-medium">
+                <TableHead className="px-6 text-sm font-medium text-muted-foreground">
+                  Nazwa
+                </TableHead>
+
+                <TableHead className="px-6 text-sm font-medium text-muted-foreground">
+                  SKU
+                </TableHead>
+
+                <TableHead className="px-6 text-sm font-medium text-muted-foreground">
+                  Kategoria
+                </TableHead>
+
+                <TableHead className="px-6 text-sm font-medium text-muted-foreground">
+                  Cena brutto
+                </TableHead>
+
+                <TableHead className="px-6 text-sm font-medium text-muted-foreground">
+                  Status
+                </TableHead>
+
+                <TableHead className="px-6 text-sm font-medium text-muted-foreground">
+                  Magazyn
+                </TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
               {paginatedProducts.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.name}</TableCell>
+                <TableRow
+                  key={product.id}
+                  className="h-[54px] border-border bg-white hover:bg-white"
+                >
+                  <TableCell className="px-6 font-medium text-foreground">
+                    {product.name}
+                  </TableCell>
 
-                  <TableCell>{product.category}</TableCell>
+                  <TableCell className="px-6 text-sm text-muted-foreground">
+                    {product.sku}
+                  </TableCell>
 
-                  <TableCell>
+                  <TableCell className="px-6 text-sm text-muted-foreground">
+                    {product.category}
+                  </TableCell>
+
+                  <TableCell className="px-6 text-sm font-medium text-foreground">
                     {product.grossPrice.toFixed(2)} {product.currency}
                   </TableCell>
 
-                  <TableCell>
+                  <TableCell className="px-6">
                     <Badge
                       variant="outline"
                       className={
                         product.isAvailable
-                          ? "border-green-200 bg-green-50 text-green-700"
-                          : "border-red-200 bg-red-50 text-red-700"
+                          ? "border-none bg-green-100 text-green-600"
+                          : "border-none bg-red-100 text-red-600"
                       }
                     >
                       {product.isAvailable ? "Dostępny" : "Niedostępny"}
                     </Badge>
                   </TableCell>
 
-                  <TableCell>{product.stockQuantity ?? "-"}</TableCell>
+                  <TableCell className="px-6 text-sm text-foreground">
+                    {product.stockQuantity ?? "-"}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
 
             <TableFooter>
-              <TableRow>
-                <TableCell colSpan={5}>
+              <TableRow className="border-border bg-[#F9FAFB] hover:bg-[#F9FAFB]">
+                <TableCell colSpan={6} className="px-6 py-3">
                   <div className="flex items-center justify-between gap-4">
                     <p className="whitespace-nowrap text-sm text-muted-foreground">
                       Strona {currentPage} z {totalPages} · {totalProducts}{" "}
@@ -170,41 +209,48 @@ export default function Home() {
                     </p>
 
                     <div className="flex items-center gap-1">
-                      <button
-                        type="button"
+                      <Button
+                        variant="ghost"
+                        size="pagination"
+                        className="rounded-md"
                         onClick={handlePreviousPage}
                         disabled={currentPage === 1}
-                        className="rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
                       >
+                        <ChevronLeft />
                         Wstecz
-                      </button>
+                      </Button>
 
-                      {Array.from(
-                        { length: totalPages },
-                        (_, index) => index + 1
-                      ).map((pageNumber) => (
-                        <button
-                          key={pageNumber}
-                          type="button"
-                          onClick={() => handlePageChange(pageNumber)}
-                          className={`h-9 min-w-9 rounded-md border px-3 text-sm font-medium transition-colors ${
-                            pageNumber === currentPage
-                              ? "bg-primary text-primary-foreground"
-                              : "hover:bg-muted"
-                          }`}
-                        >
-                          {pageNumber}
-                        </button>
-                      ))}
+                      {Array.from({ length: totalPages }, (_, index) => {
+                        const pageNumber = index + 1;
+                        const isActive = pageNumber === currentPage;
 
-                      <button
-                        type="button"
+                        return (
+                          <Button
+                            key={pageNumber}
+                            variant={isActive ? "default" : "ghost"}
+                            size="pagination"
+                            className={cn(
+                              "rounded-md",
+                              !isActive &&
+                                "bg-transparent text-foreground hover:bg-muted"
+                            )}
+                            onClick={() => handlePageChange(pageNumber)}
+                          >
+                            {pageNumber}
+                          </Button>
+                        );
+                      })}
+
+                      <Button
+                        variant="ghost"
+                        size="pagination"
+                        className="rounded-md"
                         onClick={handleNextPage}
                         disabled={currentPage === totalPages}
-                        className="rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
                       >
                         Dalej
-                      </button>
+                        <ChevronRight />
+                      </Button>
                     </div>
                   </div>
                 </TableCell>

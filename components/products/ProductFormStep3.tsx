@@ -20,15 +20,7 @@ export const ProductFormStep3 = withForm({
       <div className="grid gap-5">
         <form.Field name="isAvailable">
           {(field) => (
-            <div className="flex items-center justify-between rounded-lg border p-4">
-              <div className="grid gap-1">
-                <Label htmlFor={field.name}>Produkt dostępny</Label>
-
-                <p className="text-sm text-muted-foreground">
-                  Określa, czy produkt jest aktualnie dostępny.
-                </p>
-              </div>
-
+            <div className="flex gap-2 border-b border-border pb-4">
               <Switch
                 id={field.name}
                 checked={field.state.value}
@@ -37,13 +29,16 @@ export const ProductFormStep3 = withForm({
                   onFieldChange();
                 }}
               />
+              <div className="grid gap-1">
+                <Label htmlFor={field.name}>Produkt jest dostępny</Label>
+              </div>
             </div>
           )}
         </form.Field>
 
         <form.Field name="isLimited">
           {(field) => (
-            <div className="flex items-start gap-3">
+            <div className="flex gap-2 border-b border-border pb-4">
               <Checkbox
                 id={field.name}
                 checked={field.state.value}
@@ -58,57 +53,55 @@ export const ProductFormStep3 = withForm({
                 }}
               />
 
-              <div className="grid gap-1">
-                <Label htmlFor={field.name} className="cursor-pointer">
-                  Ograniczona liczba produktów
-                </Label>
-
-                <p className="text-sm text-muted-foreground">
-                  Zaznacz, jeśli produkt ma ograniczoną liczbę dostępnych sztuk.
-                </p>
-              </div>
+              <Label htmlFor={field.name} className="cursor-pointer">
+                Produkt limitowany
+              </Label>
             </div>
           )}
         </form.Field>
 
-        <form.Field name="stockQuantity">
-          {(field) => {
-            const isLimited = form.state.values.isLimited;
+        <h2 className="font-medium font-heading text-base">Limity koszyka</h2>
 
-            if (!isLimited) {
-              return null;
-            }
+        <form.Subscribe selector={(state) => state.values.isLimited}>
+          {(isLimited) => (
+            <>
+              {isLimited && (
+                <form.Field name="stockQuantity">
+                  {(field) => (
+                    <div className="grid gap-2">
+                      <Label htmlFor={field.name}>Stan magazynowy</Label>
 
-            return (
-              <div className="grid gap-2">
-                <Label htmlFor={field.name}>Stan magazynowy</Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={field.state.value ?? ""}
+                        onBlur={field.handleBlur}
+                        onChange={(event) => {
+                          const value = event.target.value;
 
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={field.state.value ?? ""}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => {
-                    const value = event.target.value;
+                          field.handleChange(
+                            value === "" ? null : Number(value)
+                          );
 
-                    field.handleChange(value === "" ? null : Number(value));
+                          onFieldChange();
+                        }}
+                      />
 
-                    onFieldChange();
-                  }}
-                />
-
-                {errors.stockQuantity && (
-                  <p className="text-sm text-destructive">
-                    {errors.stockQuantity}
-                  </p>
-                )}
-              </div>
-            );
-          }}
-        </form.Field>
+                      {errors.stockQuantity && (
+                        <p className="text-sm text-destructive">
+                          {errors.stockQuantity}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </form.Field>
+              )}
+            </>
+          )}
+        </form.Subscribe>
 
         <div className="grid gap-5 sm:grid-cols-2">
           <form.Field name="minOrderQuantity">

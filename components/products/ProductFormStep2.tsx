@@ -23,7 +23,7 @@ export const ProductFormStep2 = withForm({
 
   render: function Render({ form, errors, onFieldChange }) {
     return (
-      <div className="grid gap-5">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <form.Field name="netPrice">
           {(field) => (
             <div className="grid gap-2">
@@ -97,7 +97,7 @@ export const ProductFormStep2 = withForm({
         <form.Field name="vat">
           {(field) => (
             <div className="grid gap-2">
-              <Label>VAT</Label>
+              <Label>Stawka VAT</Label>
 
               <Select
                 value={String(field.state.value)}

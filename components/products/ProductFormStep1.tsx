@@ -16,9 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 
 import { initialValues, withForm } from "./product-form-setup";
+import { Badge } from "../ui/badge";
+import { cn } from "cn";
 
 export const ProductFormStep1 = withForm({
   defaultValues: initialValues,
@@ -30,101 +31,78 @@ export const ProductFormStep1 = withForm({
 
   render: function Render({ form, errors, onFieldChange }) {
     return (
-      <div className="grid gap-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {/* Nazwa produktu */}
         <form.Field name="name">
           {(field) => (
-            <div className="grid gap-2">
+            <div className="flex flex-col gap-2">
               <Label htmlFor={field.name}>Nazwa produktu</Label>
-
               <Input
                 id={field.name}
-                name={field.name}
                 value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(event) => {
-                  field.handleChange(event.target.value);
-                  onFieldChange();
-                }}
-                placeholder='Np. MacBook Pro 14"'
+                onChange={(e) => field.handleChange(e.target.value)}
+                placeholder="np. MacBook Pro 14"
+                aria-invalid={!!errors.name}
               />
-
               {errors.name && (
-                <p className="text-sm text-destructive">{errors.name}</p>
+                <p className="text-xs text-destructive">{errors.name}</p>
               )}
             </div>
           )}
         </form.Field>
 
+        {/* SKU */}
         <form.Field name="sku">
           {(field) => (
-            <div className="grid gap-2">
-              <Label htmlFor={field.name}>SKU produktu</Label>
-
+            <div className="flex flex-col gap-2">
+              <Label htmlFor={field.name}>SKU</Label>
               <Input
                 id={field.name}
-                name={field.name}
                 value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(event) => {
-                  field.handleChange(event.target.value);
-                  onFieldChange();
-                }}
-                maxLength={24}
-                placeholder="Np. MBP14M3PRO"
+                onChange={(e) => field.handleChange(e.target.value)}
+                placeholder="np. MBP14M3PRO"
+                aria-invalid={!!errors.sku}
               />
-
               {errors.sku && (
-                <p className="text-sm text-destructive">{errors.sku}</p>
+                <p className="text-xs text-destructive">{errors.sku}</p>
               )}
             </div>
           )}
         </form.Field>
 
+        {/* Opis — pełna szerokość */}
         <form.Field name="description">
           {(field) => (
-            <div className="grid gap-2">
+            <div className="flex flex-col gap-2 sm:col-span-2">
               <Label htmlFor={field.name}>Opis</Label>
-
               <Textarea
                 id={field.name}
-                name={field.name}
                 value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(event) => {
-                  field.handleChange(event.target.value);
-                  onFieldChange();
-                }}
-                placeholder="Dodaj opis produktu..."
-                rows={4}
+                onChange={(e) => field.handleChange(e.target.value)}
+                placeholder="Krótki opis produktu"
               />
-
               {errors.description && (
-                <p className="text-sm text-destructive">{errors.description}</p>
+                <p className="text-xs text-destructive">{errors.description}</p>
               )}
             </div>
           )}
         </form.Field>
 
+        {/* Producent */}
         <form.Field name="manufacturer">
           {(field) => (
-            <div className="grid gap-2">
-              <Label>Producent</Label>
-
+            <div className="flex flex-col gap-2">
+              <Label htmlFor={field.name}>Producent</Label>
               <Select
                 value={field.state.value}
                 onValueChange={(value) => {
-                  if (value === null) {
-                    return;
-                  }
-
+                  if (value === null) return;
                   field.handleChange(value);
-                  onFieldChange();
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger id={field.name}>
                   <SelectValue placeholder="Wybierz producenta" />
                 </SelectTrigger>
-
                 <SelectContent>
                   {manufacturers.map((manufacturer) => (
                     <SelectItem key={manufacturer} value={manufacturer}>
@@ -135,7 +113,7 @@ export const ProductFormStep1 = withForm({
               </Select>
 
               {errors.manufacturer && (
-                <p className="text-sm text-destructive">
+                <p className="text-xs text-destructive">
                   {errors.manufacturer}
                 </p>
               )}
@@ -143,26 +121,21 @@ export const ProductFormStep1 = withForm({
           )}
         </form.Field>
 
+        {/* Kategoria */}
         <form.Field name="category">
           {(field) => (
-            <div className="grid gap-2">
-              <Label>Kategoria</Label>
-
+            <div className="flex flex-col gap-2">
+              <Label htmlFor={field.name}>Kategoria</Label>
               <Select
                 value={field.state.value}
                 onValueChange={(value) => {
-                  if (value === null) {
-                    return;
-                  }
-
+                  if (value === null) return;
                   field.handleChange(value);
-                  onFieldChange();
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger id={field.name}>
                   <SelectValue placeholder="Wybierz kategorię" />
                 </SelectTrigger>
-
                 <SelectContent>
                   {categories.map((category) => (
                     <SelectItem key={category} value={category}>
@@ -173,7 +146,7 @@ export const ProductFormStep1 = withForm({
               </Select>
 
               {errors.category && (
-                <p className="text-sm text-destructive">{errors.category}</p>
+                <p className="text-xs text-destructive">{errors.category}</p>
               )}
             </div>
           )}
@@ -184,46 +157,35 @@ export const ProductFormStep1 = withForm({
             const selectedFeatures = field.state.value;
 
             return (
-              <div className="grid gap-3">
-                <div>
-                  <Label>Cechy produktu</Label>
+              <div className="flex flex-col gap-2 sm:col-span-2">
+                <Label>Cechy produktu</Label>
 
-                  <p className="text-sm text-muted-foreground">
-                    Wybierz co najmniej jedną cechę.
-                  </p>
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="flex flex-wrap gap-2">
                   {productFeatures.map((feature) => {
-                    const checked = selectedFeatures.includes(feature);
+                    const isSelected = selectedFeatures.includes(feature);
 
                     return (
-                      <label
+                      <Badge
                         key={feature}
-                        className="flex cursor-pointer items-center gap-3"
+                        variant={isSelected ? "default" : "outline"}
+                        className={cn(
+                          "cursor-pointer rounded-full px-2 py-0.5 text-sm font-normal",
+                          isSelected ? "text-white" : "text-muted-foreground"
+                        )}
+                        onClick={() => {
+                          if (isSelected) {
+                            field.handleChange(
+                              selectedFeatures.filter(
+                                (item) => item !== feature
+                              )
+                            );
+                          } else {
+                            field.handleChange([...selectedFeatures, feature]);
+                          }
+                        }}
                       >
-                        <Checkbox
-                          checked={checked}
-                          onCheckedChange={(value) => {
-                            if (value) {
-                              field.handleChange([
-                                ...selectedFeatures,
-                                feature,
-                              ]);
-                            } else {
-                              field.handleChange(
-                                selectedFeatures.filter(
-                                  (item) => item !== feature
-                                )
-                              );
-                            }
-
-                            onFieldChange();
-                          }}
-                        />
-
-                        <span className="text-sm">{feature}</span>
-                      </label>
+                        {feature}
+                      </Badge>
                     );
                   })}
                 </div>

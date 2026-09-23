@@ -15,6 +15,9 @@ import { initialValues, useAppForm } from "./product-form-setup";
 import { ProductFormStep1 } from "./ProductFormStep1";
 import { ProductFormStep2 } from "./ProductFormStep2";
 import { ProductFormStep3 } from "./ProductFormStep3";
+import { Button } from "../ui/button";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ProductFormStepper } from "./ProductFormStepper";
 
 type ProductFormProps = {
   onSubmit: (product: ProductFormValues) => void;
@@ -101,82 +104,55 @@ export function ProductForm({ onSubmit }: ProductFormProps) {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">
-            Krok {currentStep + 1} z 3
-          </p>
+    <div className="flex flex-col gap-6 justify-between">
+      <ProductFormStepper currentStep={currentStep} />
+      <div className="px-4">
+        {currentStep === 0 && (
+          <ProductFormStep1
+            form={form}
+            errors={stepErrors}
+            onFieldChange={handleFieldChange}
+          />
+        )}
 
-          <h2 className="text-lg font-semibold">
-            {currentStep === 0 && "Informacje podstawowe"}
-            {currentStep === 1 && "Cena"}
-            {currentStep === 2 && "Dostępność i stany magazynowe"}
-          </h2>
-        </div>
+        {currentStep === 1 && (
+          <ProductFormStep2
+            form={form}
+            errors={stepErrors}
+            onFieldChange={handleFieldChange}
+          />
+        )}
 
-        <div className="flex gap-1">
-          {[0, 1, 2].map((step) => (
-            <div
-              key={step}
-              className={`h-1.5 w-8 rounded-full ${
-                step <= currentStep ? "bg-primary" : "bg-muted"
-              }`}
-            />
-          ))}
-        </div>
+        {currentStep === 2 && (
+          <ProductFormStep3
+            form={form}
+            errors={stepErrors}
+            onFieldChange={handleFieldChange}
+          />
+        )}
       </div>
 
-      {currentStep === 0 && (
-        <ProductFormStep1
-          form={form}
-          errors={stepErrors}
-          onFieldChange={handleFieldChange}
-        />
-      )}
-
-      {currentStep === 1 && (
-        <ProductFormStep2
-          form={form}
-          errors={stepErrors}
-          onFieldChange={handleFieldChange}
-        />
-      )}
-
-      {currentStep === 2 && (
-        <ProductFormStep3
-          form={form}
-          errors={stepErrors}
-          onFieldChange={handleFieldChange}
-        />
-      )}
-
-      <div className="flex justify-between border-t pt-4">
-        <button
-          type="button"
-          onClick={handleBack}
-          disabled={currentStep === 0}
-          className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
-        >
-          Wstecz
-        </button>
+      <div className="flex justify-between border-t h-17 items-center px-4 bg-secondary rounded-b-xl">
+        {currentStep !== 0 ? (
+          <Button
+            onClick={handleBack}
+            variant="outline"
+            className="bg-secondary"
+          >
+            <ArrowLeft />
+            Wstecz
+          </Button>
+        ) : (
+          <div />
+        )}
 
         {currentStep < 2 ? (
-          <button
-            type="button"
-            onClick={handleNext}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
+          <Button onClick={handleNext} className="">
             Dalej
-          </button>
+            <ArrowRight />
+          </Button>
         ) : (
-          <button
-            type="button"
-            onClick={handleSubmit}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Dodaj produkt
-          </button>
+          <Button onClick={handleSubmit}>Zapisz produkt</Button>
         )}
       </div>
     </div>
