@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 
 import { initialValues, withForm } from "./product-form-setup";
-import { Badge } from "../ui/badge";
+import { Badge } from "../../ui/badge";
 import { cn } from "cn";
 
 export const ProductFormStep1 = withForm({

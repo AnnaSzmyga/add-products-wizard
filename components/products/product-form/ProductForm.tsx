@@ -15,7 +15,7 @@ import { initialValues, useAppForm } from "./product-form-setup";
 import { ProductFormStep1 } from "./ProductFormStep1";
 import { ProductFormStep2 } from "./ProductFormStep2";
 import { ProductFormStep3 } from "./ProductFormStep3";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { ProductFormStepper } from "./ProductFormStepper";
 
