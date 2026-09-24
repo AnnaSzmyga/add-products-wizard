@@ -123,7 +123,7 @@ export const ProductFormStep2 = withForm({
                   <SelectValue placeholder="Wybierz VAT" />
                 </SelectTrigger>
 
-                <SelectContent>
+                <SelectContent alignItemWithTrigger={false}>
                   {vatRates.map((rate) => (
                     <SelectItem key={rate} value={String(rate)}>
                       {rate}%
@@ -159,7 +159,7 @@ export const ProductFormStep2 = withForm({
                   <SelectValue placeholder="Wybierz walutę" />
                 </SelectTrigger>
 
-                <SelectContent>
+                <SelectContent alignItemWithTrigger={false}>
                   {currencies.map((currency) => (
                     <SelectItem key={currency} value={currency}>
                       {currency}

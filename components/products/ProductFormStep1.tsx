@@ -103,7 +103,7 @@ export const ProductFormStep1 = withForm({
                 <SelectTrigger id={field.name}>
                   <SelectValue placeholder="Wybierz producenta" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent alignItemWithTrigger={false}>
                   {manufacturers.map((manufacturer) => (
                     <SelectItem key={manufacturer} value={manufacturer}>
                       {manufacturer}
@@ -136,7 +136,7 @@ export const ProductFormStep1 = withForm({
                 <SelectTrigger id={field.name}>
                   <SelectValue placeholder="Wybierz kategorię" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent alignItemWithTrigger={false}>
                   {categories.map((category) => (
                     <SelectItem key={category} value={category}>
                       {category}

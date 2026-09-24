@@ -104,9 +104,10 @@ export function ProductForm({ onSubmit }: ProductFormProps) {
   };
 
   return (
-    <div className="flex flex-col gap-6 justify-between">
+    <div className="flex min-h-0 flex-1 flex-col">
       <ProductFormStepper currentStep={currentStep} />
-      <div className="px-4">
+
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6">
         {currentStep === 0 && (
           <ProductFormStep1
             form={form}
@@ -132,7 +133,7 @@ export function ProductForm({ onSubmit }: ProductFormProps) {
         )}
       </div>
 
-      <div className="flex justify-between border-t h-17 items-center px-4 bg-secondary rounded-b-xl">
+      <div className="flex h-17 shrink-0 items-center justify-between border-t border-border bg-secondary px-4">
         {currentStep !== 0 ? (
           <Button
             onClick={handleBack}
@@ -147,7 +148,7 @@ export function ProductForm({ onSubmit }: ProductFormProps) {
         )}
 
         {currentStep < 2 ? (
-          <Button onClick={handleNext} className="">
+          <Button onClick={handleNext}>
             Dalej
             <ArrowRight />
           </Button>
